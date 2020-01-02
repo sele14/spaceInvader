@@ -18,13 +18,21 @@ playerX = 370
 playerY = 480
 playerX_change = 0
 
-# enemy
-enemyImg = pygame.image.load('terrorist.png')
-# want to spawn random places
-enemyX = randint(0, 735)
-enemyY = randint(50,150)
-enemyX_change = 2
-enemyY_change = 40
+# Enemies
+enemyImg = []
+enemyX = []
+enemyY = []
+enemyX_change = []
+enemyY_change = []
+# change per preferrence
+num_of_enemies = 6
+for i in range(num_of_enemies):
+    enemyImg.append(pygame.image.load('terrorist.png'))
+    # want to spawn random places
+    enemyX.append(randint(0, 735))
+    enemyY.append(randint(50,150))
+    enemyX_change.append(2)
+    enemyY_change.append(40)
 
 # bullet
 bulletImg = pygame.image.load('bullet1.png')
@@ -39,13 +47,14 @@ score = 0 # to keep score
 def player(x, y):
     # blit draws on our screen, here we draw the player image
     screen.blit(playerImg, (x, y))
-def enemy(x, y):
+def enemy(x, y, i):
     # blit draws on our screen, here we draw the player image
-    screen.blit(enemyImg, (x, y))
+    screen.blit(enemyImg[i], (x, y))
 
 def fire_bullet(x, y):
     global bullet_state
     bullet_state = "fire"
+    # draw bullet on screen
     screen.blit(bulletImg, (x + 16, y + 10))
 
 def isCollision(enemyX, enemyY, bulletX, bulletY):
@@ -92,13 +101,28 @@ while running:
         playerX = 736
 
     # enemy movement:
-    enemyX += enemyX_change
-    if enemyX <= 0:
-        enemyX_change  = 2
-        enemyY += enemyY_change
-    elif enemyX >= 736:
-        enemyX_change = -2
-        enemyY += enemyY_change
+    for i in range(num_of_enemies):
+        enemyX[i] += enemyX_change[i]
+        if enemyX[i] <= 0:
+            enemyX_change[i]  = 2
+            enemyY[i] += enemyY_change[i]
+        elif enemyX[i] >= 736:
+            enemyX_change[i] = -2
+            enemyY[i] += enemyY_change[i]
+    
+    # collision
+    collision = isCollision(enemyX[i], enemyY[i], bulletX, bulletY)
+    if collision:
+        bulletY = 480
+        bullet_state = "ready"
+        score += 1
+        print(score)
+        # respawning the enemy when show
+        enemyX[i] = randint(0, 735)
+        enemyY[i] = randint(50,150)
+    
+    # calling enemy function (that draws (blit) the enemies on scrn)
+    enemy(enemyX[i], enemyY[i], i)
 
     # bullet movement
     if bulletY <= 0:
@@ -108,20 +132,8 @@ while running:
         fire_bullet(bulletX, bulletY)
         bulletY -= bulletY_change
 
-    # collision
-    collision = isCollision(enemyX, enemyY, bulletX, bulletY)
-    if collision:
-        bulletY = 480
-        bullet_state = "ready"
-        score += 1
-        print(score)
-        # respawning the enemy when show
-        enemyX = randint(0, 735)
-        enemyY = randint(50,150)
-
     # draw player:
     player(playerX, playerY)
-    enemy(enemyX, enemyY)
     pygame.display.update()
 
 # https://www.youtube.com/watch?v=FfWpgLFMI7w
