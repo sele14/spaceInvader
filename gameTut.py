@@ -24,14 +24,21 @@ enemyX = []
 enemyY = []
 enemyX_change = []
 enemyY_change = []
-# change per preferrence
 num_of_enemies = 6
+
+# for i in range(num_of_enemies):
+#     enemyImg.append(pygame.image.load('terrorist.png'))
+#     # want to spawn random places
+#     enemyX.append(randint(0, 735))
+#     enemyY.append(randint(50,150))
+#     enemyX_change.append(2)
+#     enemyY_change.append(40)
+
 for i in range(num_of_enemies):
     enemyImg.append(pygame.image.load('terrorist.png'))
-    # want to spawn random places
-    enemyX.append(randint(0, 735))
-    enemyY.append(randint(50,150))
-    enemyX_change.append(2)
+    enemyX.append(randint(0, 736))
+    enemyY.append(randint(50, 150))
+    enemyX_change.append(4)
     enemyY_change.append(40)
 
 # bullet
@@ -100,7 +107,7 @@ while running:
     elif playerX >= 736: # 800 - 64
         playerX = 736
 
-    # enemy movement:
+    # Enemy Movement
     for i in range(num_of_enemies):
         enemyX[i] += enemyX_change[i]
         if enemyX[i] <= 0:
@@ -110,19 +117,19 @@ while running:
             enemyX_change[i] = -2
             enemyY[i] += enemyY_change[i]
     
-    # collision
-    collision = isCollision(enemyX[i], enemyY[i], bulletX, bulletY)
-    if collision:
-        bulletY = 480
-        bullet_state = "ready"
-        score += 1
-        print(score)
-        # respawning the enemy when show
-        enemyX[i] = randint(0, 735)
-        enemyY[i] = randint(50,150)
-    
-    # calling enemy function (that draws (blit) the enemies on scrn)
-    enemy(enemyX[i], enemyY[i], i)
+        # collision
+        collision = isCollision(enemyX[i], enemyY[i], bulletX, bulletY)
+        if collision:
+            bulletY = 480
+            bullet_state = "ready"
+            score += 1
+            print(score)
+            # respawning the enemy when show
+            enemyX[i] = randint(0, 735)
+            enemyY[i] = randint(50,150)
+        
+        # calling enemy function (that draws (blit) the enemies on scrn)
+        enemy(enemyX[i], enemyY[i], i)
 
     # bullet movement
     if bulletY <= 0:
@@ -137,4 +144,4 @@ while running:
     pygame.display.update()
 
 # https://www.youtube.com/watch?v=FfWpgLFMI7w
-# ON 1:48:00
+# ON 1:55:08 (adding text etc.)
