@@ -1,11 +1,19 @@
 import pygame
 from random import randint
 import math
+from pygame import mixer
 pygame.init()
 
 # Create the screen
 screen = pygame.display.set_mode((800,600))
 background = pygame.image.load('background.jpg')
+
+# music:
+# rats:
+#mixer.music.load('background.mp3') 
+# dance macabre:
+mixer.music.load('background2.mp3') 
+mixer.music.play(-1)
 
 # Caption and logo:
 pygame.display.set_caption("Space Invader")
@@ -26,23 +34,15 @@ enemyX_change = []
 enemyY_change = []
 num_of_enemies = 6
 
-# for i in range(num_of_enemies):
-#     enemyImg.append(pygame.image.load('terrorist.png'))
-#     # want to spawn random places
-#     enemyX.append(randint(0, 735))
-#     enemyY.append(randint(50,150))
-#     enemyX_change.append(2)
-#     enemyY_change.append(40)
-
 for i in range(num_of_enemies):
-    enemyImg.append(pygame.image.load('terrorist.png'))
+    enemyImg.append(pygame.image.load('enemy.png'))
     enemyX.append(randint(0, 736))
     enemyY.append(randint(50, 150))
     enemyX_change.append(4)
     enemyY_change.append(40)
 
 # bullet
-bulletImg = pygame.image.load('bullet1.png')
+bulletImg = pygame.image.load('bullet.png')
 bulletX = 0
 bulletY = 480
 bulletX_change = 0
@@ -50,7 +50,23 @@ bulletY_change = 10
 # ready means cant see bullet on scrn
 # fire means bullet is moving
 bullet_state = "ready"
-score = 0 # to keep score
+
+# score
+score_value = 0
+font = pygame.font.Font('freesansbold.ttf', 32)
+textX, textY = 10, 10
+
+# game over text
+over_font = pygame.font.Font('freesansbold.ttf', 64)
+
+def show_score(x, y):
+    score = font.render("Score: " + str(score_value), True, (255, 255, 255))
+    screen.blit(score, (x, y))
+
+def game_over_text():
+    score = over_font.render("GAME OVER", True, (255, 255, 255))
+    screen.blit(score, (200, 250))
+
 def player(x, y):
     # blit draws on our screen, here we draw the player image
     screen.blit(playerImg, (x, y))
@@ -90,7 +106,9 @@ while running:
             if event.key == pygame.K_RIGHT:
                 playerX_change = 3
             if event.key == pygame.K_UP:
-                if bullet_state is "ready":            
+                if bullet_state is "ready":     
+                    bullet_sound = mixer.Sound("laser.wav")
+                    bullet_sound.play()
                     bulletX = playerX
                     fire_bullet(bulletX, bulletY)
 
@@ -109,6 +127,15 @@ while running:
 
     # Enemy Movement
     for i in range(num_of_enemies):
+
+        # Game over text
+        if enemyY[i] > 440:
+            # when one of the enemies exceeds this, collect all enemies and move out of screen
+            for j in range(num_of_enemies):
+                enemyY[j] = 2000
+            game_over_text()
+            break
+
         enemyX[i] += enemyX_change[i]
         if enemyX[i] <= 0:
             enemyX_change[i]  = 2
@@ -120,10 +147,11 @@ while running:
         # collision
         collision = isCollision(enemyX[i], enemyY[i], bulletX, bulletY)
         if collision:
+            explosion_sound = mixer.Sound("explosion.wav")
+            explosion_sound.play()
             bulletY = 480
             bullet_state = "ready"
-            score += 1
-            print(score)
+            score_value += 1
             # respawning the enemy when show
             enemyX[i] = randint(0, 735)
             enemyY[i] = randint(50,150)
@@ -141,7 +169,12 @@ while running:
 
     # draw player:
     player(playerX, playerY)
+
+    # show score on screen
+    show_score(textX, textY)
+
     pygame.display.update()
+
 
 # https://www.youtube.com/watch?v=FfWpgLFMI7w
 # ON 1:55:08 (adding text etc.)
