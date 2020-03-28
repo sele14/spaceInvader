@@ -174,7 +174,3 @@ while running:
     show_score(textX, textY)
 
     pygame.display.update()
-
-
-# https://www.youtube.com/watch?v=FfWpgLFMI7w
-# ON 1:55:08 (adding text etc.)
